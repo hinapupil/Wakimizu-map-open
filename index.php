@@ -23,14 +23,14 @@
   if (isset($_GET['place'])) {
     $q = $_GET['place'];
   } else {
-    $q = "千葉";
-    $_GET['place'] = "千葉";
+    $q = "千葉県";
+    $_GET['place'] = "千葉県";
   }
   ?>
 
   <form method="GET" action="index.php">
     <label>都道府県を選択してください:</label>
-    <select name="place">
+    <select name="place" id="pulldown">
       <option value="北海道">北海道</option>
       <option value="青森県">青森県</option>
       <option value="岩手県">岩手県</option>
@@ -42,7 +42,7 @@
       <option value="栃木県">栃木県</option>
       <option value="群馬県">群馬県</option>
       <option value="埼玉県">埼玉県</option>
-      <option value="千葉県" selected>千葉県</option>
+      <option value="千葉県">千葉県</option>
       <option value="東京都">東京都</option>
       <option value="神奈川県">神奈川県</option>
       <option value="新潟県">新潟県</option>
@@ -81,16 +81,32 @@
     </select>
     <input type="submit" value="検索する">
   </form>
+  <!-- 選択状態の保持 -->
+  <script>
+    document.getElementById("pulldown").value = "<?php echo $_GET['place'] ?>";
+  </script>
 
   <div id="target"></div>
 
   <script src="https://maps.googleapis.com/maps/api/js?language=ja&region=JP&key=YOUR_API_KEY&callback=initMap" async defer></script>
 
   <?php
+  //503エラー解決
+  function random($length = 8)
+  {
+    return substr(str_shuffle('1234567890abcdefghijklmnopqrstuvwxyz'), 0, $length);
+  }
+  $random = random();
+  $options = [
+    "http" => [
+        "header" => "User-Agent: ${random}",
+    ],
+  ];
+  $context = stream_context_create($options);
   //湧き水API用リクエストURLを生成する
   $req = "https://livlog.xyz/springwater/springWater?q=" . $q;
   //湧き水APIを用いてJSONデータをダウンロードする
-  $json = file_get_contents($req);
+  $json = file_get_contents($req, false, $context);
   $json = mb_convert_encoding($json, 'UTF8', 'ASCII,JIS,UTF-8,EUC-JP,SJIS-WIN');
   $arr = json_decode($json, true);
 
@@ -130,7 +146,6 @@
     }
   }
   ?>
-
   <script>
     function initMap() {
 
