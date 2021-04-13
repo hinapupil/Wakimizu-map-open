@@ -216,7 +216,7 @@
       }
       //マップクリック時に情報ウィンドウを削除
       google.maps.event.addListener(map, 'click', function() {
-        activeInfo.close();
+        currentInfoWindow.close();
       });
 
     }
