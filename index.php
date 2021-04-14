@@ -7,7 +7,7 @@
   <style>
     #target {
       width: 100%;
-      height: 90vh;
+      height: 80vh;
     }
 
     form {
